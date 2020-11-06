@@ -7,7 +7,7 @@ Los tipos de datos son enteros
 
 Las sentencias terminan con un punto y coma
 
-Operaciones aritméticas: suma y resta. (se agregaron mas operaciones aritméticas como el producto, division entera y módulo)
+Operaciones aritméticas: suma y resta (se agregaron mas operaciones aritméticas como el producto, division entera y módulo).
 
 los identificadores están compuestos por letras (una o mas letras) y dígitos (cero o mas dígitos).
 
