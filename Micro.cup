@@ -1,0 +1,94 @@
+package ar.edu.ub.dc.compilador_micro;
+
+import java_cup.runtime.*;
+
+action code {:
+	static String AVISO = "PROGRAMA VACIO!!";
+	
+	public static void mostrar(){
+	
+		System.out.println(AVISO);
+	}
+:}
+
+terminal INICIO, FIN, ESCRIBIR, ASIGN, COMA;
+
+terminal String ID;
+
+/* Terminales sin atributo */
+terminal PUNTOYCOMA, MAS, MENOS, POR, DIVIDIDO, MODULO;
+terminal P_ABRE, P_CIERRA;
+
+/* Terminales con atributo asociado */
+terminal Integer NUMERO;
+
+/* No terminales sin atributo */
+non terminal Integer lista_expr;
+
+/* No terminales con atributo asociado */
+non terminal Integer expr;
+
+non terminal programa, instrucciones, asign, in;
+ 
+/* Precedencias */
+precedence left MAS, MENOS;
+precedence left POR, DIVIDIDO, MODULO;
+
+
+
+/* gramatica  */
+
+programa ::= INICIO instrucciones FIN | INICIO in FIN | INICIO /* Lambda */ FIN {: mostrar(); :};
+
+in ::= ID:i ASIGN expr:e PUNTOYCOMA {: RESULT = e; 
+									   System.out.println(i + " = " + e); 
+									:} 
+									| ID:i ASIGN expr:e PUNTOYCOMA in 
+									{: RESULT = e; 
+									   System.out.println(i + " = " + e); 
+									:}
+									| lista_expr PUNTOYCOMA
+									| lista_expr PUNTOYCOMA in
+									| lista_expr PUNTOYCOMA instrucciones;
+
+instrucciones ::= ID:i PUNTOYCOMA {: System.out.println("ADVERTENCIA Variable no inicializada: " + i); :}
+				  | ID:i PUNTOYCOMA instrucciones {: System.out.println("ADVERTENCIA Variable no inicializada: " + i); :}
+				  | ID:i ASIGN expr:e PUNTOYCOMA instrucciones {:    RESULT = e; 
+									  								 System.out.println(i + " = " + e); 
+																:}												
+				  | ESCRIBIR P_ABRE asign P_CIERRA PUNTOYCOMA 
+				  | ESCRIBIR P_ABRE asign P_CIERRA PUNTOYCOMA instrucciones
+				  | ESCRIBIR P_ABRE asign P_CIERRA PUNTOYCOMA in
+				  ;
+								
+	
+asign ::=  ID:i COMA asign {: System.out.println("ID: " + i); :} | ID:i {: System.out.println("ID: " + i); :};
+ 
+
+lista_expr ::= lista_expr expr:e  
+			   /*{: System.out.println("resultado de la expresion = " + e); :}*/
+			| /* Lambda */
+			
+			;
+
+expr ::= expr:e1 MAS expr:e2
+		{: RESULT = new Integer(e1.intValue() + e2.intValue()); 
+		   System.out.println("resultado de la operacion: " + Integer.valueOf(e1) + "+" +Integer.valueOf(e2) + "=" + RESULT);:}
+		| expr:e1 MENOS expr:e2
+		{: RESULT = new Integer(e1.intValue() - e2.intValue());
+			System.out.println("resultado de la operacion: " + Integer.valueOf(e1) + "-" +Integer.valueOf(e2) + "=" + RESULT); :}
+		| expr:e1 POR expr:e2
+		{: RESULT = new Integer(e1.intValue() * e2.intValue());
+			System.out.println("resultado de la operacion: " + Integer.valueOf(e1) + "*" +Integer.valueOf(e2) + "=" + RESULT); :}
+		| expr:e1 DIVIDIDO expr:e2
+		{: RESULT = new Integer(e1.intValue() / e2.intValue()); 
+			System.out.println("resultado de la operacion: " + Integer.valueOf(e1) + "/" +Integer.valueOf(e2) + "=" + RESULT);:}
+		| expr:e1 MODULO expr:e2
+		{: RESULT = new Integer(e1.intValue() % e2.intValue()); 
+		    System.out.println("resultado de la operacion: " + Integer.valueOf(e1) + "%" +Integer.valueOf(e2) + "=" + RESULT);:}
+		| NUMERO:n
+		{: RESULT = n; 
+			System.out.println("leer: " + RESULT);:}
+		| P_ABRE expr:e P_CIERRA
+		{: RESULT = e; :}
+		;
