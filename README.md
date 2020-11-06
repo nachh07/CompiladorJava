@@ -1,6 +1,5 @@
 # CompiladorJava
 Trabajo práctico de la materia Diseño de compiladores.
-Trabajo práctico de la asignatura "Diseño de compiladores".
 
 Se creó un lenguaje denominado "Micro".
 
